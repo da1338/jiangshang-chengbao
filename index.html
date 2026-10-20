@@ -4,7 +4,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>江上城堡 · 一二层交互平面图</title>
-<meta name="description" content="哈尔滨江上城堡一层、二层装置点位交互平面图">
 <style>
   :root{--red:#d64545;--bg:#101418;--panel:#1b2129;--line:#2c3540;--text:#eef1f4;--muted:#93a0ad;}
   *{box-sizing:border-box;margin:0;padding:0}
@@ -116,29 +115,20 @@
 const PLAN = { "1": "assets/plan1.jpg", "2": "assets/plan2.jpg" };
 
 const MEDIA = {
-  v1: "assets/v1.mp4",
-  v2: "assets/v2.mp4",
-  v3a: "assets/v3a.mp4",
-  v3b: "assets/v3b.mp4",
-  v3c: "assets/v3c.mp4",
-  v5: "assets/v5.mp4",
-  v6: "assets/v6.mp4",
-  i3a: "assets/i3a.webp",
-  i3b: "assets/i3b.webp",
-  i3c: "assets/i3c.webp",
-  i3d: "assets/i3d.webp",
-  i4a: "assets/i4a.png",
-  i4b: "assets/i4b.jpg",
-  v2f1: "assets/v2f1.mp4",
-  v2f2: "assets/v2f2.mp4",
-  v2f3: "assets/v2f3.mp4",
-  v2f4: "assets/v2f4.mp4",
-  i2f4: "assets/i2f4.webp"
+  m_tuidong: "assets/m_tuidong.mp4",
+  m_wutai: "assets/m_wutai.mp4",
+  m_fangying: "assets/m_fangying.mp4",
+  m_daolan: "assets/m_daolan.mp4",
+  m_ipqiang: "assets/m_ipqiang.png",
+  m_renmen: "assets/m_renmen.mp4",
+  m_touyingui: "assets/m_touyingui.mp4",
+  m_daka: "assets/m_daka.webp",
+  m_yanqiu: "assets/m_yanqiu.mp4"
 };
 
 const FLOORS = {
-  "1": {name:"一层", iw:1920, ih:1357, r:36, markers:{1:[1023,536],2:[1071,350],3:[912,214],4:[1098,439],5:[878,325],6:[943,673]}, data:{"1":{title:"航海装置", items:[{k:"v1",type:"video",cap:"参考视频"}]},"2":{title:"导览屏交互", items:[{k:"v2",type:"video",cap:"参考视频"}]},"3":{title:"大厅桌游 · 乒乓 / 冰球", items:[{k:"v3a",type:"video",cap:"乒乓桌游 · 视频"},{k:"i3a",type:"image",cap:"乒乓桌游"},{k:"v3b",type:"video",cap:"冰球桌游 · 视频"},{k:"v3c",type:"video",cap:"冰球桌游 · 视频 2"},{k:"i3b",type:"image",cap:"冰球桌游"},{k:"i3c",type:"image",cap:"冰球桌游"},{k:"i3d",type:"image",cap:"冰球桌游"}]},"4":{title:"IP熊 · 今日精神状态互动墙", items:[{k:"i4a",type:"image",cap:"磁吸互动墙 · 熊头版"},{k:"i4b",type:"image",cap:"磁吸互动墙 · 表情版"}]},"5":{title:"遥控滑冰舞蹈", items:[{k:"v5",type:"video",cap:"参考视频"}]},"6":{title:"拥抱装置", items:[{k:"v6",type:"video",cap:"参考视频"}]}}},
-  "2": {name:"二层", iw:1920, ih:1357, r:26, markers:{1:[1410,823],2:[1381,739],3:[1353,670],4:[1332,562],5:[1055,315]}, data:{"1":{title:"推动IP熊", items:[{k:"v2f1",type:"video",cap:"参考视频"}]},"2":{title:"互动小舞台", items:[{k:"v2f2",type:"video",cap:"参考视频"}]},"3":{title:"摇动放映装置", items:[{k:"v2f3",type:"video",cap:"参考视频"}]},"4":{title:"打卡装置", items:[{k:"i2f4",type:"image",cap:"打卡装置参考"}]},"5":{title:"眼球装置", items:[{k:"v2f4",type:"video",cap:"参考视频"}]}}}
+  "1": {name:"一层", iw:1768, ih:1211, r:24, markers:{1:[804,372],2:[724,435],3:[708,537],4:[987,479],5:[894,633],6:[1004,729],7:[795,473]}, data:{"1":{title:"推动IP熊", items:[{k:"m_tuidong",type:"video",cap:"参考视频"}]},"2":{title:"互动小舞台", items:[{k:"m_wutai",type:"video",cap:"参考视频"}]},"3":{title:"摇动放映装置", items:[{k:"m_fangying",type:"video",cap:"参考视频"}]},"4":{title:"导览屏交互", items:[{k:"m_daolan",type:"video",cap:"参考视频"}]},"5":{title:"IP熊 · 今日精神状态互动墙", items:[{k:"m_ipqiang",type:"image",cap:"磁吸互动墙参考"}]},"6":{title:"任意门", items:[{k:"m_renmen",type:"video",cap:"参考视频"}]},"7":{title:"投影柜", items:[{k:"m_touyingui",type:"video",cap:"参考视频"}]}}},
+  "2": {name:"二层", iw:1920, ih:1357, r:26, markers:{1:[1410,823],2:[1381,739],3:[1353,670],4:[1332,562],5:[1055,315]}, data:{"1":{title:"推动IP熊", items:[{k:"m_tuidong",type:"video",cap:"参考视频"}]},"2":{title:"互动小舞台", items:[{k:"m_wutai",type:"video",cap:"参考视频"}]},"3":{title:"摇动放映装置", items:[{k:"m_fangying",type:"video",cap:"参考视频"}]},"4":{title:"打卡装置", items:[{k:"m_daka",type:"image",cap:"打卡装置参考"}]},"5":{title:"眼球装置", items:[{k:"m_yanqiu",type:"video",cap:"参考视频"}]}}}
 };
 
 
@@ -199,7 +189,6 @@ function openMarker(f, n){
       const cap = document.createElement('div'); cap.className = 'icap'; cap.textContent = it.cap;
       const v = document.createElement('video');
       v.src = MEDIA[it.k]; v.controls = true; v.playsInline = true; v.preload = 'none';
-      v.poster = '';
       div.appendChild(cap); div.appendChild(v); body.appendChild(div);
     }else{ imgs.push(it); }
   });

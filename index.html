@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>江上城堡 · 一二层交互平面图</title>
+<meta name="description" content="哈尔滨江上城堡一层、二层装置点位交互平面图">
+<style>
+  :root{--red:#d64545;--bg:#101418;--panel:#1b2129;--line:#2c3540;--text:#eef1f4;--muted:#93a0ad;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{background:var(--bg);color:var(--text);font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;
+       display:flex;flex-direction:column;overflow:hidden}
+  header{display:flex;align-items:center;gap:16px;padding:10px 18px;flex-wrap:wrap}
+  header h1{font-size:16px;font-weight:700;letter-spacing:.5px;white-space:nowrap}
+  header h1 b{color:var(--red);font-weight:700}
+  .tabs{display:flex;gap:6px;background:#171d24;border:1px solid var(--line);border-radius:10px;padding:3px}
+  .tabs button{font:inherit;font-size:13px;padding:6px 18px;border:none;border-radius:8px;
+       background:none;color:var(--muted);cursor:pointer;transition:.18s;white-space:nowrap}
+  .tabs button:hover{color:var(--text)}
+  .tabs button.on{background:var(--red);color:#fff}
+  header .tip{font-size:12px;color:var(--muted);margin-left:auto}
+  main{flex:1;display:flex;align-items:center;justify-content:center;min-height:0;padding:0 18px 12px}
+  .stage{position:relative;max-width:100%;max-height:100%}
+  .layer{display:none;position:relative}
+  .layer.on{display:block}
+  .layer img{display:block;max-width:100%;max-height:calc(100vh - 104px);width:auto;height:auto;
+             border-radius:10px;box-shadow:0 8px 40px rgba(0,0,0,.5)}
+  .hot{position:absolute;transform:translate(-50%,-50%);aspect-ratio:1/1;border-radius:50%;
+       background:transparent;border:none;cursor:pointer;padding:0}
+  .hot::after{content:"";position:absolute;inset:14%;border-radius:50%;
+       border:2px solid rgba(255,255,255,0);transition:border-color .18s, box-shadow .18s}
+  .hot:hover::after{border-color:rgba(255,255,255,.9);box-shadow:0 0 14px rgba(255,255,255,.45)}
+  .hot::before{content:"";position:absolute;inset:4%;border-radius:50%;
+       border:2px solid rgba(255,214,120,.8);animation:pulse 2.4s ease-out infinite}
+  @keyframes pulse{
+    0%{transform:scale(.85);opacity:.9}
+    70%{transform:scale(1.25);opacity:0}
+    100%{transform:scale(1.25);opacity:0}
+  }
+  footer{padding:0 18px 10px;font-size:11px;color:var(--muted)}
+
+  .mask{position:fixed;inset:0;background:rgba(4,6,9,.84);display:none;
+        align-items:flex-start;justify-content:center;z-index:50;padding:24px 16px;overflow-y:auto}
+  .mask.show{display:flex}
+  .player{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+          padding:14px 14px 12px;max-width:min(860px,94vw);width:100%;margin:auto}
+  .player .cap{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+  .player .cap h2{font-size:15px;font-weight:600}
+  .player .cap h2 .no{display:inline-flex;align-items:center;justify-content:center;
+        width:24px;height:24px;border-radius:50%;background:var(--red);color:#fff;
+        font-size:13px;margin-right:8px;vertical-align:-4px}
+  .player .cap h2 .fl{font-size:11px;color:var(--muted);border:1px solid var(--line);
+        border-radius:6px;padding:2px 7px;margin-right:8px;vertical-align:2px;font-weight:400}
+  .player .cap button{background:none;border:1px solid var(--line);color:var(--muted);
+          border-radius:8px;padding:5px 12px;font-size:13px;cursor:pointer;flex:0 0 auto}
+  .player .cap button:hover{color:var(--text);border-color:#4a5560}
+  .player video{width:100%;max-height:62vh;border-radius:8px;background:#000;display:block}
+  .item{margin-bottom:14px}
+  .item .icap{font-size:12px;color:var(--muted);margin-bottom:6px}
+  .imgs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .imgs .item{margin-bottom:0}
+  .imgs img{width:100%;height:auto;border-radius:8px;display:block;cursor:zoom-in;background:#0b0e12}
+
+  .viewer{position:fixed;inset:0;background:rgba(0,0,0,.92);display:none;
+          align-items:center;justify-content:center;z-index:70;padding:20px;cursor:zoom-out}
+  .viewer.show{display:flex}
+  .viewer img{max-width:96vw;max-height:94vh;width:auto;height:auto;border-radius:6px}
+
+  .toast{position:fixed;left:50%;bottom:9%;transform:translateX(-50%);background:#242c36;
+         border:1px solid var(--line);color:var(--text);font-size:13px;border-radius:10px;
+         padding:9px 16px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:60;white-space:nowrap}
+  .toast.show{opacity:1}
+
+  @media (max-width:760px){
+    header{padding:9px 12px;gap:10px}
+    header h1{font-size:15px}
+    header .tip{display:none}
+    .tabs button{padding:6px 14px;font-size:13px}
+    main{padding:0 10px 8px}
+    .layer img{max-height:calc(100vh - 132px)}
+    .mask{padding:14px 8px}
+    .player video{max-height:46vh}
+  }
+  @media (max-width:400px){ .imgs{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+<header>
+  <h1>江上城堡 · <b>一二层交互平面图</b></h1>
+  <div class="tabs" id="tabs">
+    <button data-f="1" class="on">一层</button>
+    <button data-f="2">二层</button>
+  </div>
+  <span class="tip">点击红色标点查看装置参考</span>
+</header>
+<main>
+  <div class="stage" id="stage"></div>
+</main>
+<footer id="foot">一层平面图 · 点击标点查看装置</footer>
+
+<div class="mask" id="mask">
+  <div class="player">
+    <div class="cap">
+      <h2 id="mTitle"></h2>
+      <button id="closeBtn">关闭 ✕</button>
+    </div>
+    <div id="mBody"></div>
+  </div>
+</div>
+
+<div class="viewer" id="viewer"><img id="viewerImg" alt=""></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const PLAN = { "1": "assets/plan1.jpg", "2": "assets/plan2.jpg" };
+
+const MEDIA = {
+  v1: "assets/v1.mp4",
+  v2: "assets/v2.mp4",
+  v3a: "assets/v3a.mp4",
+  v3b: "assets/v3b.mp4",
+  v3c: "assets/v3c.mp4",
+  v5: "assets/v5.mp4",
+  v6: "assets/v6.mp4",
+  i3a: "assets/i3a.webp",
+  i3b: "assets/i3b.webp",
+  i3c: "assets/i3c.webp",
+  i3d: "assets/i3d.webp",
+  i4a: "assets/i4a.png",
+  i4b: "assets/i4b.jpg",
+  v2f1: "assets/v2f1.mp4",
+  v2f2: "assets/v2f2.mp4",
+  v2f3: "assets/v2f3.mp4",
+  v2f4: "assets/v2f4.mp4",
+  i2f4: "assets/i2f4.webp"
+};
+
+const FLOORS = {
+  "1": {name:"一层", iw:1920, ih:1357, r:36, markers:{1:[1023,536],2:[1071,350],3:[912,214],4:[1098,439],5:[878,325],6:[943,673]}, data:{"1":{title:"航海装置", items:[{k:"v1",type:"video",cap:"参考视频"}]},"2":{title:"导览屏交互", items:[{k:"v2",type:"video",cap:"参考视频"}]},"3":{title:"大厅桌游 · 乒乓 / 冰球", items:[{k:"v3a",type:"video",cap:"乒乓桌游 · 视频"},{k:"i3a",type:"image",cap:"乒乓桌游"},{k:"v3b",type:"video",cap:"冰球桌游 · 视频"},{k:"v3c",type:"video",cap:"冰球桌游 · 视频 2"},{k:"i3b",type:"image",cap:"冰球桌游"},{k:"i3c",type:"image",cap:"冰球桌游"},{k:"i3d",type:"image",cap:"冰球桌游"}]},"4":{title:"IP熊 · 今日精神状态互动墙", items:[{k:"i4a",type:"image",cap:"磁吸互动墙 · 熊头版"},{k:"i4b",type:"image",cap:"磁吸互动墙 · 表情版"}]},"5":{title:"遥控滑冰舞蹈", items:[{k:"v5",type:"video",cap:"参考视频"}]},"6":{title:"拥抱装置", items:[{k:"v6",type:"video",cap:"参考视频"}]}}},
+  "2": {name:"二层", iw:1920, ih:1357, r:26, markers:{1:[1410,823],2:[1381,739],3:[1353,670],4:[1332,562],5:[1055,315]}, data:{"1":{title:"推动IP熊", items:[{k:"v2f1",type:"video",cap:"参考视频"}]},"2":{title:"互动小舞台", items:[{k:"v2f2",type:"video",cap:"参考视频"}]},"3":{title:"摇动放映装置", items:[{k:"v2f3",type:"video",cap:"参考视频"}]},"4":{title:"打卡装置", items:[{k:"i2f4",type:"image",cap:"打卡装置参考"}]},"5":{title:"眼球装置", items:[{k:"v2f4",type:"video",cap:"参考视频"}]}}}
+};
+
+
+const stage = document.getElementById('stage');
+const mask = document.getElementById('mask'), body = document.getElementById('mBody');
+const mTitle = document.getElementById('mTitle');
+const viewer = document.getElementById('viewer'), viewerImg = document.getElementById('viewerImg');
+const toast = document.getElementById('toast');
+let toastTimer = null, curFloor = '1';
+
+function showToast(msg){
+  toast.textContent = msg; toast.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(()=>toast.classList.remove('show'), 1800);
+}
+function stopVideos(){ body.querySelectorAll('video').forEach(v=>v.pause()); }
+
+Object.keys(FLOORS).forEach(f=>{
+  const F = FLOORS[f];
+  const layer = document.createElement('div');
+  layer.className = 'layer' + (f === '1' ? ' on' : '');
+  layer.dataset.floor = f;
+  const im = document.createElement('img');
+  im.src = PLAN[f]; im.alt = F.name + '平面图'; im.draggable = false;
+  layer.appendChild(im);
+  Object.keys(F.markers).forEach(n=>{
+    const x = F.markers[n][0], y = F.markers[n][1];
+    const b = document.createElement('button');
+    b.className = 'hot'; b.dataset.n = n; b.dataset.floor = f;
+    b.style.left = (x / F.iw * 100).toFixed(3) + '%';
+    b.style.top = (y / F.ih * 100).toFixed(3) + '%';
+    b.style.width = (F.r * 2 / F.iw * 100).toFixed(3) + '%';
+    b.style.animationDelay = ((n - 1) * 0.3) + 's';
+    b.setAttribute('aria-label', F.name + '标点' + n);
+    b.onclick = ()=>openMarker(f, n);
+    layer.appendChild(b);
+  });
+  stage.appendChild(layer);
+});
+
+function switchFloor(f){
+  curFloor = f;
+  document.querySelectorAll('.layer').forEach(l=>l.classList.toggle('on', l.dataset.floor === f));
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on', b.dataset.f === f));
+  closePlayer();
+  document.getElementById('foot').textContent = FLOORS[f].name + '平面图 · 点击标点查看装置';
+}
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick = ()=>switchFloor(b.dataset.f));
+
+function openMarker(f, n){
+  const F = FLOORS[f], d = F.data[n];
+  if(!d){ showToast('标点 ' + n + '：内容待配置'); return; }
+  mTitle.innerHTML = '<span class="fl">' + F.name + '</span><span class="no">' + n + '</span>' + d.title;
+  const imgs = [];
+  body.innerHTML = '';
+  d.items.forEach(it=>{
+    if(it.type === 'video'){
+      const div = document.createElement('div'); div.className = 'item';
+      const cap = document.createElement('div'); cap.className = 'icap'; cap.textContent = it.cap;
+      const v = document.createElement('video');
+      v.src = MEDIA[it.k]; v.controls = true; v.playsInline = true; v.preload = 'none';
+      v.poster = '';
+      div.appendChild(cap); div.appendChild(v); body.appendChild(div);
+    }else{ imgs.push(it); }
+  });
+  if(imgs.length){
+    const grid = document.createElement('div'); grid.className = 'imgs';
+    imgs.forEach(it=>{
+      const div = document.createElement('div'); div.className = 'item';
+      const cap = document.createElement('div'); cap.className = 'icap'; cap.textContent = it.cap;
+      const im = document.createElement('img');
+      im.src = MEDIA[it.k]; im.loading = 'lazy'; im.alt = it.cap;
+      im.onclick = ()=>{ viewerImg.src = MEDIA[it.k]; viewer.classList.add('show'); };
+      div.appendChild(cap); div.appendChild(im); grid.appendChild(div);
+    });
+    body.appendChild(grid);
+  }
+  mask.classList.add('show');
+}
+function closePlayer(){ mask.classList.remove('show'); stopVideos(); }
+document.getElementById('closeBtn').onclick = closePlayer;
+mask.addEventListener('click', e=>{ if(e.target === mask) closePlayer(); });
+viewer.addEventListener('click', ()=>{ viewer.classList.remove('show'); viewerImg.src=''; });
+document.addEventListener('keydown', e=>{
+  if(e.key === 'Escape'){
+    if(viewer.classList.contains('show')){ viewer.classList.remove('show'); viewerImg.src=''; }
+    else closePlayer();
+  }
+  if(e.key === '1' || e.key === '2'){ if(!mask.classList.contains('show')) switchFloor(e.key); }
+});
+</script>
+</body>
+</html>

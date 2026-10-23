@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>江上城堡 · 一二层交互平面图</title>
+<title>江上城堡 · 楼层交互平面图</title>
 <style>
   :root{--red:#d64545;--green:#2f8f4e;--bg:#101418;--panel:#1b2129;--line:#2c3540;--text:#eef1f4;--muted:#93a0ad;}
   *{box-sizing:border-box;margin:0;padding:0}
@@ -113,11 +113,8 @@
 </head>
 <body>
 <header>
-  <h1>江上城堡 · <b>一二层交互平面图</b></h1>
-  <div class="tabs" id="tabs">
-    <button data-f="1" class="on">一层</button>
-    <button data-f="2">二层</button>
-  </div>
+  <h1>江上城堡 · <b>楼层交互平面图</b></h1>
+  <div class="tabs" id="tabs"></div>
   <button id="editBtn">✥ 调整标点</button>
   <span class="tip">点击红色标点查看装置参考</span>
 </header>
@@ -155,7 +152,7 @@
 <div class="toast" id="toast"></div>
 
 <script>
-const PLAN = { "1": "assets/plan1.jpg", "2": "assets/plan2.jpg" };
+const PLAN = { "1": "assets/plan1.jpg", "2": "assets/plan2.jpg", "8": "assets/plan8.jpg" };
 
 const MEDIA = {
   m_tuidong: "assets/m_tuidong.mp4",
@@ -177,12 +174,24 @@ const MEDIA = {
   m_jieya1: "assets/m_jieya1.webp",
   m_jieya2: "assets/m_jieya2.webp",
   m_paopao: "assets/m_paopao.webp",
-  m_zhanguib: "assets/m_zhanguib.png"
+  m_zhanguib: "assets/m_zhanguib.png",
+  m8_1a: "assets/m8_1a.jpg",
+  m8_1b: "assets/m8_1b.jpg",
+  m8_1c: "assets/m8_1c.jpg",
+  m8_2a: "assets/m8_2a.jpg",
+  m8_2b: "assets/m8_2b.jpg",
+  m8_2c: "assets/m8_2c.jpg",
+  m8_2d: "assets/m8_2d.jpg",
+  m8_2e: "assets/m8_2e.jpg",
+  m8_2f: "assets/m8_2f.jpg",
+  m8_3: "assets/m8_3.jpg",
+  m8_4: "assets/m8_4.jpg"
 };
 
 const FLOORS = {
   "1": {name:"一层", iw:2200, ih:1555, r:24, markers:{1:[936,501],2:[854,559],3:[848,683],4:[1124,649],5:[1042,786],6:[1184,902],7:[932,600]}, data:{"1":{title:"机械装置", items:[{k:"m_tuidong",type:"video",cap:"推动IP熊 · 参考视频"}]},"2":{title:"机械装置", items:[{k:"m_wutai",type:"video",cap:"互动小舞台 · 参考视频"}]},"3":{title:"机械装置", items:[{k:"m_fangying",type:"video",cap:"摇动放映装置 · 参考视频"}]},"4":{title:"导览屏", items:[{k:"m_daolan",type:"video",cap:"导览屏交互 · 参考视频"}]},"5":{title:"麦倩聪", items:[{k:"m_ipq2",type:"image",cap:"IP熊今日精神状态互动墙 · 熊头版"},{k:"m_ipq1",type:"image",cap:"IP熊今日精神状态互动墙 · 表情版"}]},"6":{title:"任意门", items:[{k:"m_renmen",type:"video",cap:"任意门 · 参考视频"}]},"7":{title:"投影小舞台", items:[{k:"m_touyingui",type:"video",cap:"投影柜 · 参考视频"}]}}},
-  "2": {name:"二层", iw:2200, ih:1555, r:24, markers:{1:[1446,1200],2:[1549,1091],3:[1549,1164],4:[1568,1281],5:[1603,1414],6:[1394,1111],7:[1068,930]}, data:{"1":{title:"旋转木马", items:[{k:"m_mutou2",type:"image",cap:"旋转木马 2"},{k:"m_mutouB",type:"image",cap:"旋转木马 B 方案"},{k:"m_mutouv2",type:"image",cap:"旋转木马 v2"}]},"2":{title:"拍立得交互装置", items:[{k:"m_pld",type:"image",cap:"拍立得交互装置"},{k:"m_pldB",type:"image",cap:"拍立得 B 方案"},{k:"m_pld0",type:"image",cap:"拍立得原版"}]},"3":{title:"体感躺床装置", items:[{k:"m_tigan",type:"video",cap:"体感蹦床游戏装置 · 参考视频"}]},"4":{title:"游戏装置", items:[{k:"m_game",type:"video",cap:"游戏装置 · 参考视频"}]},"5":{title:"解压装置", items:[{k:"m_jieya1",type:"image",cap:"解压装置 1"},{k:"m_jieya2",type:"image",cap:"解压装置 2"}]},"6":{title:"海盗船泡泡池", items:[{k:"m_paopao",type:"image",cap:"海盗船泡泡池"}]},"7":{title:"海盗船展柜", items:[{k:"m_zhanguib",type:"image",cap:"海盗船展柜 B 方案"}]}}}
+  "2": {name:"二层", iw:2200, ih:1555, r:24, markers:{1:[1446,1200],2:[1549,1091],3:[1549,1164],4:[1568,1281],5:[1603,1414],6:[1394,1111],7:[1068,930]}, data:{"1":{title:"旋转木马", items:[{k:"m_mutou2",type:"image",cap:"旋转木马 2"},{k:"m_mutouB",type:"image",cap:"旋转木马 B 方案"},{k:"m_mutouv2",type:"image",cap:"旋转木马 v2"}]},"2":{title:"拍立得交互装置", items:[{k:"m_pld",type:"image",cap:"拍立得交互装置"},{k:"m_pldB",type:"image",cap:"拍立得 B 方案"},{k:"m_pld0",type:"image",cap:"拍立得原版"}]},"3":{title:"体感躺床装置", items:[{k:"m_tigan",type:"video",cap:"体感蹦床游戏装置 · 参考视频"}]},"4":{title:"游戏装置", items:[{k:"m_game",type:"video",cap:"游戏装置 · 参考视频"}]},"5":{title:"解压装置", items:[{k:"m_jieya1",type:"image",cap:"解压装置 1"},{k:"m_jieya2",type:"image",cap:"解压装置 2"}]},"6":{title:"海盗船泡泡池", items:[{k:"m_paopao",type:"image",cap:"海盗船泡泡池"}]},"7":{title:"海盗船展柜", items:[{k:"m_zhanguib",type:"image",cap:"海盗船展柜 B 方案"}]}}},
+  "8": {name:"八层", iw:3312, ih:2339, r:24, markers:{1:[2927,1028],2:[1529,1802],3:[2115,1470],4:[1026,903]}, data:{"1":{title:"钟楼神像", items:[{k:"m8_1a",type:"image",cap:"巴洛克天使穹顶圣殿"},{k:"m8_1b",type:"image",cap:"穹顶之下的天使雕像"},{k:"m8_1c",type:"image",cap:"圆穹天井下的古典雕塑殿堂"}]},"2":{title:"咖啡走廊", items:[{k:"m8_2a",type:"image",cap:"巴克斯盛宴穹顶长廊"},{k:"m8_2b",type:"image",cap:"飞马云顶的古典咖啡廊"},{k:"m8_2c",type:"image",cap:"天穹神话雕塑长廊咖啡厅"},{k:"m8_2d",type:"image",cap:"云端神殿般的奢华咖啡廊道"},{k:"m8_2e",type:"image",cap:"云端天使长廊咖啡馆"},{k:"m8_2f",type:"image",cap:"咖啡走廊 · 另一版"}]},"3":{title:"财富美陈", items:[{k:"m8_3",type:"image",cap:"财富美陈 B 方案"}]},"4":{title:"海盗音箱装置", items:[{k:"m8_4",type:"image",cap:"海盗音箱装置"}]}}}
 };
 
 
@@ -191,7 +200,7 @@ const mask = document.getElementById('mask'), body = document.getElementById('mB
 const mTitle = document.getElementById('mTitle');
 const viewer = document.getElementById('viewer'), viewerImg = document.getElementById('viewerImg');
 const toast = document.getElementById('toast');
-let toastTimer = null, curFloor = '1', editMode = false;
+let toastTimer = null, curFloor = Object.keys(FLOORS)[0], editMode = false;
 const LS_KEY = 'jsb_pos_v1';
 const DEFAULTS = JSON.parse(JSON.stringify(FLOORS));
 
@@ -220,10 +229,11 @@ function posJSON(){
   return JSON.stringify(out);
 }
 
-Object.keys(FLOORS).forEach(f=>{
+const FLOOR_KEYS = Object.keys(FLOORS);
+FLOOR_KEYS.forEach((f, fi)=>{
   const F = FLOORS[f];
   const layer = document.createElement('div');
-  layer.className = 'layer' + (f === '1' ? ' on' : '');
+  layer.className = 'layer' + (fi === 0 ? ' on' : '');
   layer.dataset.floor = f;
   const im = document.createElement('img');
   im.src = PLAN[f]; im.alt = F.name + '平面图'; im.draggable = false;
@@ -243,6 +253,18 @@ Object.keys(FLOORS).forEach(f=>{
   });
   stage.appendChild(layer);
 });
+
+/* 楼层标签按 FLOORS 自动生成 */
+const tabsEl = document.getElementById('tabs');
+FLOOR_KEYS.forEach((f, fi)=>{
+  const b = document.createElement('button');
+  b.dataset.f = f;
+  b.textContent = FLOORS[f].name;
+  if(fi === 0) b.classList.add('on');
+  b.onclick = ()=>switchFloor(f);
+  tabsEl.appendChild(b);
+});
+document.getElementById('foot').textContent = FLOORS[FLOOR_KEYS[0]].name + '平面图 · 点击标点查看装置';
 
 // 编号字体跟随图宽缩放
 function fitNumbers(){
@@ -413,7 +435,7 @@ document.addEventListener('keydown', e=>{
     else if(mask.classList.contains('show')) closePlayer();
     else if(editMode) setEdit(false);
   }
-  if(e.key === '1' || e.key === '2'){ if(!mask.classList.contains('show')) switchFloor(e.key); }
+  if(FLOORS[e.key] && !mask.classList.contains('show')) switchFloor(e.key);
 });
 </script>
 </body>

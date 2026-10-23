@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>江上城堡 · 一二层交互平面图</title>
 <style>
-  :root{--red:#d64545;--bg:#101418;--panel:#1b2129;--line:#2c3540;--text:#eef1f4;--muted:#93a0ad;}
+  :root{--red:#d64545;--green:#2f8f4e;--bg:#101418;--panel:#1b2129;--line:#2c3540;--text:#eef1f4;--muted:#93a0ad;}
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%}
   body{background:var(--bg);color:var(--text);font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;
@@ -19,24 +19,33 @@
   .tabs button:hover{color:var(--text)}
   .tabs button.on{background:var(--red);color:#fff}
   header .tip{font-size:12px;color:var(--muted);margin-left:auto}
+  #editBtn{font:inherit;font-size:13px;padding:6px 16px;border:1px solid var(--line);border-radius:8px;
+       background:none;color:var(--muted);cursor:pointer;white-space:nowrap;transition:.18s}
+  #editBtn:hover{color:var(--text);border-color:#4a5560}
+  body.edit #editBtn{background:#e9c46a;border-color:#e9c46a;color:#1f2933;font-weight:700}
+  #editbar{display:none;align-items:center;gap:10px;flex-wrap:wrap;padding:8px 18px;
+       background:#241f10;border-top:1px solid #4a4222;border-bottom:1px solid #4a4222;font-size:13px;color:#e9c46a}
+  body.edit #editbar{display:flex}
+  #editbar button{font:inherit;font-size:13px;padding:5px 14px;border:1px solid #6b5f2e;border-radius:8px;
+       background:#2e2814;color:#e9c46a;cursor:pointer}
+  #editbar button:hover{border-color:#e9c46a}
+  #editbar button.warn{color:#f0b1b1;border-color:#6b3a3a}
   main{flex:1;display:flex;align-items:center;justify-content:center;min-height:0;padding:0 18px 12px}
   .stage{position:relative;max-width:100%;max-height:100%}
   .layer{display:none;position:relative}
   .layer.on{display:block}
-  .layer img{display:block;max-width:100%;max-height:calc(100vh - 104px);width:auto;height:auto;
+  .layer img{display:block;max-width:100%;max-height:calc(100vh - 150px);width:auto;height:auto;
              border-radius:10px;box-shadow:0 8px 40px rgba(0,0,0,.5)}
-  .hot{position:absolute;transform:translate(-50%,-50%);aspect-ratio:1/1;border-radius:50%;
-       background:transparent;border:none;cursor:pointer;padding:0}
-  .hot::after{content:"";position:absolute;inset:14%;border-radius:50%;
-       border:2px solid rgba(255,255,255,0);transition:border-color .18s, box-shadow .18s}
-  .hot:hover::after{border-color:rgba(255,255,255,.9);box-shadow:0 0 14px rgba(255,255,255,.45)}
-  .hot::before{content:"";position:absolute;inset:4%;border-radius:50%;
-       border:2px solid rgba(255,214,120,.8);animation:pulse 2.4s ease-out infinite}
-  @keyframes pulse{
-    0%{transform:scale(.85);opacity:.9}
-    70%{transform:scale(1.25);opacity:0}
-    100%{transform:scale(1.25);opacity:0}
-  }
+  .hot{position:absolute;transform:translate(-50%,-50%);border-radius:50%;cursor:pointer;
+       background:var(--red);border:.14em solid #fff;
+       box-shadow:0 0 0 .26em var(--green),0 2px 10px rgba(0,0,0,.45);
+       color:#fff;font-weight:700;font-size:var(--fs,14px);line-height:1;
+       display:flex;align-items:center;justify-content:center;aspect-ratio:1/1;
+       padding:0;user-select:none;-webkit-user-select:none;transition:filter .15s}
+  .hot:hover{filter:brightness(1.12);z-index:5}
+  body.edit .hot{cursor:grab;touch-action:none}
+  body.edit .hot:active{cursor:grabbing;filter:brightness(1.15);
+       box-shadow:0 0 0 .26em #e9c46a,0 0 0 .55em rgba(233,196,106,.35),0 2px 10px rgba(0,0,0,.45);z-index:6}
   footer{padding:0 18px 10px;font-size:11px;color:var(--muted)}
 
   .mask{position:fixed;inset:0;background:rgba(4,6,9,.84);display:none;
@@ -71,13 +80,31 @@
          padding:9px 16px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:60;white-space:nowrap}
   .toast.show{opacity:1}
 
+  #jbox{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:80;display:none;
+        align-items:center;justify-content:center;padding:20px}
+  #jbox.show{display:flex}
+  #jbox .jcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+        padding:14px;width:min(640px,94vw)}
+  #jbox .jhead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+  #jbox .jhead b{font-size:14px}
+  #jbox .jhead button{background:none;border:1px solid var(--line);color:var(--muted);
+        border-radius:8px;padding:4px 10px;font-size:13px;cursor:pointer}
+  #jbox textarea{width:100%;height:180px;font-family:Consolas,monospace;font-size:12px;
+        background:#0b0e12;color:#cde3d0;border:1px solid var(--line);border-radius:8px;
+        padding:8px;resize:vertical;white-space:pre}
+  #jbox #jsel{margin-top:8px;font:inherit;font-size:13px;padding:5px 14px;border:1px solid var(--line);
+        border-radius:8px;background:#232b35;color:var(--text);cursor:pointer}
+
   @media (max-width:760px){
     header{padding:9px 12px;gap:10px}
     header h1{font-size:15px}
     header .tip{display:none}
     .tabs button{padding:6px 14px;font-size:13px}
+    #editBtn{padding:6px 12px;font-size:13px}
+    #editbar{padding:8px 12px;font-size:12px;gap:8px}
+    #editbar button{padding:5px 10px;font-size:12px}
     main{padding:0 10px 8px}
-    .layer img{max-height:calc(100vh - 132px)}
+    .layer img{max-height:calc(100vh - 178px)}
     .mask{padding:14px 8px}
     .player video{max-height:46vh}
   }
@@ -91,8 +118,17 @@
     <button data-f="1" class="on">一层</button>
     <button data-f="2">二层</button>
   </div>
+  <button id="editBtn">✥ 调整标点</button>
   <span class="tip">点击红色标点查看装置参考</span>
 </header>
+<div id="editbar">
+  <b>调整模式</b><span>直接拖动圆点到合适位置，松手即自动保存</span>
+  <button id="copyPos">复制坐标</button>
+  <button id="sendPos">发送给 AI</button>
+  <button id="dlPos">导出 JSON</button>
+  <button id="resetPos" class="warn">还原默认</button>
+  <button id="exitEdit">完成</button>
+</div>
 <main>
   <div class="stage" id="stage"></div>
 </main>
@@ -109,6 +145,13 @@
 </div>
 
 <div class="viewer" id="viewer"><img id="viewerImg" alt=""></div>
+<div id="jbox">
+  <div class="jcard">
+    <div class="jhead"><b>标点坐标 JSON（全选复制后发给 AI 固化）</b><button id="jclose">关闭 ✕</button></div>
+    <textarea id="jtext" readonly spellcheck="false"></textarea>
+    <button id="jsel">全选并复制</button>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -119,16 +162,27 @@ const MEDIA = {
   m_wutai: "assets/m_wutai.mp4",
   m_fangying: "assets/m_fangying.mp4",
   m_daolan: "assets/m_daolan.mp4",
-  m_ipqiang: "assets/m_ipqiang.png",
+  m_ipq2: "assets/m_ipq2.png",
+  m_ipq1: "assets/m_ipq1.jpg",
   m_renmen: "assets/m_renmen.mp4",
   m_touyingui: "assets/m_touyingui.mp4",
-  m_daka: "assets/m_daka.webp",
-  m_yanqiu: "assets/m_yanqiu.mp4"
+  m_mutou2: "assets/m_mutou2.png",
+  m_mutouB: "assets/m_mutouB.png",
+  m_mutouv2: "assets/m_mutouv2.png",
+  m_pld: "assets/m_pld.webp",
+  m_pldB: "assets/m_pldB.png",
+  m_pld0: "assets/m_pld0.png",
+  m_tigan: "assets/m_tigan.mp4",
+  m_game: "assets/m_game.mp4",
+  m_jieya1: "assets/m_jieya1.webp",
+  m_jieya2: "assets/m_jieya2.webp",
+  m_paopao: "assets/m_paopao.webp",
+  m_zhanguib: "assets/m_zhanguib.png"
 };
 
 const FLOORS = {
-  "1": {name:"一层", iw:1768, ih:1211, r:24, markers:{1:[804,372],2:[724,435],3:[708,537],4:[987,479],5:[894,633],6:[1004,729],7:[795,473]}, data:{"1":{title:"推动IP熊", items:[{k:"m_tuidong",type:"video",cap:"参考视频"}]},"2":{title:"互动小舞台", items:[{k:"m_wutai",type:"video",cap:"参考视频"}]},"3":{title:"摇动放映装置", items:[{k:"m_fangying",type:"video",cap:"参考视频"}]},"4":{title:"导览屏交互", items:[{k:"m_daolan",type:"video",cap:"参考视频"}]},"5":{title:"IP熊 · 今日精神状态互动墙", items:[{k:"m_ipqiang",type:"image",cap:"磁吸互动墙参考"}]},"6":{title:"任意门", items:[{k:"m_renmen",type:"video",cap:"参考视频"}]},"7":{title:"投影柜", items:[{k:"m_touyingui",type:"video",cap:"参考视频"}]}}},
-  "2": {name:"二层", iw:1920, ih:1357, r:26, markers:{1:[1410,823],2:[1381,739],3:[1353,670],4:[1332,562],5:[1055,315]}, data:{"1":{title:"推动IP熊", items:[{k:"m_tuidong",type:"video",cap:"参考视频"}]},"2":{title:"互动小舞台", items:[{k:"m_wutai",type:"video",cap:"参考视频"}]},"3":{title:"摇动放映装置", items:[{k:"m_fangying",type:"video",cap:"参考视频"}]},"4":{title:"打卡装置", items:[{k:"m_daka",type:"image",cap:"打卡装置参考"}]},"5":{title:"眼球装置", items:[{k:"m_yanqiu",type:"video",cap:"参考视频"}]}}}
+  "1": {name:"一层", iw:2200, ih:1555, r:24, markers:{1:[936,501],2:[854,559],3:[848,683],4:[1124,649],5:[1042,786],6:[1184,902],7:[932,600]}, data:{"1":{title:"机械装置", items:[{k:"m_tuidong",type:"video",cap:"推动IP熊 · 参考视频"}]},"2":{title:"机械装置", items:[{k:"m_wutai",type:"video",cap:"互动小舞台 · 参考视频"}]},"3":{title:"机械装置", items:[{k:"m_fangying",type:"video",cap:"摇动放映装置 · 参考视频"}]},"4":{title:"导览屏", items:[{k:"m_daolan",type:"video",cap:"导览屏交互 · 参考视频"}]},"5":{title:"麦倩聪", items:[{k:"m_ipq2",type:"image",cap:"IP熊今日精神状态互动墙 · 熊头版"},{k:"m_ipq1",type:"image",cap:"IP熊今日精神状态互动墙 · 表情版"}]},"6":{title:"任意门", items:[{k:"m_renmen",type:"video",cap:"任意门 · 参考视频"}]},"7":{title:"投影小舞台", items:[{k:"m_touyingui",type:"video",cap:"投影柜 · 参考视频"}]}}},
+  "2": {name:"二层", iw:2200, ih:1555, r:24, markers:{1:[1446,1200],2:[1549,1091],3:[1549,1164],4:[1568,1281],5:[1603,1414],6:[1394,1111],7:[1068,930]}, data:{"1":{title:"旋转木马", items:[{k:"m_mutou2",type:"image",cap:"旋转木马 2"},{k:"m_mutouB",type:"image",cap:"旋转木马 B 方案"},{k:"m_mutouv2",type:"image",cap:"旋转木马 v2"}]},"2":{title:"拍立得交互装置", items:[{k:"m_pld",type:"image",cap:"拍立得交互装置"},{k:"m_pldB",type:"image",cap:"拍立得 B 方案"},{k:"m_pld0",type:"image",cap:"拍立得原版"}]},"3":{title:"体感躺床装置", items:[{k:"m_tigan",type:"video",cap:"体感蹦床游戏装置 · 参考视频"}]},"4":{title:"游戏装置", items:[{k:"m_game",type:"video",cap:"游戏装置 · 参考视频"}]},"5":{title:"解压装置", items:[{k:"m_jieya1",type:"image",cap:"解压装置 1"},{k:"m_jieya2",type:"image",cap:"解压装置 2"}]},"6":{title:"海盗船泡泡池", items:[{k:"m_paopao",type:"image",cap:"海盗船泡泡池"}]},"7":{title:"海盗船展柜", items:[{k:"m_zhanguib",type:"image",cap:"海盗船展柜 B 方案"}]}}}
 };
 
 
@@ -137,13 +191,34 @@ const mask = document.getElementById('mask'), body = document.getElementById('mB
 const mTitle = document.getElementById('mTitle');
 const viewer = document.getElementById('viewer'), viewerImg = document.getElementById('viewerImg');
 const toast = document.getElementById('toast');
-let toastTimer = null, curFloor = '1';
+let toastTimer = null, curFloor = '1', editMode = false;
+const LS_KEY = 'jsb_pos_v1';
+const DEFAULTS = JSON.parse(JSON.stringify(FLOORS));
+
+// 恢复用户上次拖动保存的位置
+try{
+  const saved = JSON.parse(localStorage.getItem(LS_KEY) || 'null');
+  if(saved) for(const f in saved){
+    if(FLOORS[f]) for(const n in saved[f]) FLOORS[f].markers[n] = saved[f][n];
+  }
+}catch(e){}
 
 function showToast(msg){
   toast.textContent = msg; toast.classList.add('show');
   clearTimeout(toastTimer); toastTimer = setTimeout(()=>toast.classList.remove('show'), 1800);
 }
 function stopVideos(){ body.querySelectorAll('video').forEach(v=>v.pause()); }
+
+function savePositions(){
+  const out = {};
+  for(const f in FLOORS) out[f] = FLOORS[f].markers;
+  try{ localStorage.setItem(LS_KEY, JSON.stringify(out)); }catch(e){}
+}
+function posJSON(){
+  const out = {};
+  for(const f in FLOORS) out[f] = FLOORS[f].markers;
+  return JSON.stringify(out);
+}
 
 Object.keys(FLOORS).forEach(f=>{
   const F = FLOORS[f];
@@ -152,15 +227,16 @@ Object.keys(FLOORS).forEach(f=>{
   layer.dataset.floor = f;
   const im = document.createElement('img');
   im.src = PLAN[f]; im.alt = F.name + '平面图'; im.draggable = false;
+  im.onload = fitNumbers;
   layer.appendChild(im);
   Object.keys(F.markers).forEach(n=>{
     const x = F.markers[n][0], y = F.markers[n][1];
     const b = document.createElement('button');
     b.className = 'hot'; b.dataset.n = n; b.dataset.floor = f;
+    b.textContent = n;
     b.style.left = (x / F.iw * 100).toFixed(3) + '%';
     b.style.top = (y / F.ih * 100).toFixed(3) + '%';
     b.style.width = (F.r * 2 / F.iw * 100).toFixed(3) + '%';
-    b.style.animationDelay = ((n - 1) * 0.3) + 's';
     b.setAttribute('aria-label', F.name + '标点' + n);
     b.onclick = ()=>openMarker(f, n);
     layer.appendChild(b);
@@ -168,16 +244,137 @@ Object.keys(FLOORS).forEach(f=>{
   stage.appendChild(layer);
 });
 
+// 编号字体跟随图宽缩放
+function fitNumbers(){
+  document.querySelectorAll('.layer').forEach(layer=>{
+    const F = FLOORS[layer.dataset.floor];
+    layer.style.setProperty('--fs', (layer.clientWidth * F.r * 2 / F.iw * 0.62).toFixed(1) + 'px');
+  });
+}
+window.addEventListener('resize', fitNumbers);
+window.addEventListener('load', fitNumbers);
+setTimeout(fitNumbers, 300);
+
 function switchFloor(f){
   curFloor = f;
   document.querySelectorAll('.layer').forEach(l=>l.classList.toggle('on', l.dataset.floor === f));
   document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on', b.dataset.f === f));
   closePlayer();
-  document.getElementById('foot').textContent = FLOORS[f].name + '平面图 · 点击标点查看装置';
+  document.getElementById('foot').textContent = FLOORS[f].name + '平面图 · 点击标点查看装置' ;
+  fitNumbers();
 }
 document.querySelectorAll('#tabs button').forEach(b=>b.onclick = ()=>switchFloor(b.dataset.f));
 
+/* ---------- 调整模式 ---------- */
+const editBtn = document.getElementById('editBtn');
+function setEdit(on){
+  editMode = on;
+  document.body.classList.toggle('edit', on);
+  editBtn.textContent = on ? '✓ 调整中…' : '✥ 调整标点';
+  if(on) showToast('调整模式：拖动圆点，松手自动保存');
+}
+editBtn.onclick = ()=>setEdit(!editMode);
+document.getElementById('exitEdit').onclick = ()=>{ savePositions(); setEdit(false); showToast('已保存并退出调整模式'); };
+
+const jbox = document.getElementById('jbox'), jtext = document.getElementById('jtext');
+function showJSONBox(){
+  jtext.value = posJSON();
+  jbox.classList.add('show');
+  setTimeout(()=>{ jtext.focus(); jtext.select(); }, 60);
+}
+document.getElementById('jclose').onclick = ()=>jbox.classList.remove('show');
+jbox.addEventListener('click', e=>{ if(e.target === jbox) jbox.classList.remove('show'); });
+document.getElementById('jsel').onclick = ()=>{
+  jtext.focus(); jtext.select();
+  let ok = false;
+  try{ ok = document.execCommand('copy'); }catch(e){}
+  showToast(ok ? '已复制，发给 AI 即可固化' : '已全选，请按 Ctrl+C 复制');
+};
+document.getElementById('copyPos').onclick = ()=>{
+  const j = posJSON();
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(j).then(()=>showToast('坐标已复制，发给 AI 即可固化'))
+      .catch(showJSONBox);
+  }else{
+    showJSONBox();
+  }
+};
+/* 自动上报：只要本机服务在跑，打开页面 / 每次拖动松手都会把坐标写到 AI 那边，无需点任何按钮 */
+let reportedOnce = false;
+const IS_LOCAL = (location.hostname === '127.0.0.1' || location.hostname === 'localhost');
+function autoReport(){
+  if(!IS_LOCAL) return;
+  const j = posJSON();
+  try{ fetch('/save_coords', {method:'POST', headers:{'Content-Type':'text/plain'}, body: j}).catch(()=>{}); }catch(e){}
+  try{ fetch('http://127.0.0.1:8777/save_coords', {method:'POST', mode:'no-cors',
+            headers:{'Content-Type':'text/plain'}, body: j}).catch(()=>{}); }catch(e){}
+}
+try{
+  const _sv = JSON.parse(localStorage.getItem(LS_KEY) || 'null');
+  if(_sv && !reportedOnce){ reportedOnce = true; setTimeout(autoReport, 800); }
+}catch(e){}
+
+document.getElementById('dlPos').onclick = ()=>{
+
+/* 发送给 AI：本机服务在跑时，坐标直接落到硬盘，连复制都不用 */
+document.getElementById('sendPos').onclick = ()=>{
+  autoReport();
+  showToast('已发送给 AI ✓ 请回到对话说一句“调好了”');
+};
+// 「发送给 AI」只在本机链接有效（公网版自动隐藏，避免误判成功）
+if(!IS_LOCAL){
+  const sb = document.getElementById('sendPos');
+  if(sb) sb.style.display = 'none';
+}
+  const blob = new Blob([posJSON()], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = '标点坐标.json'; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 3000);
+};
+document.getElementById('resetPos').onclick = ()=>{
+  if(!confirm('确定还原全部标点到默认位置？')) return;
+  try{ localStorage.removeItem(LS_KEY); }catch(e){}
+  for(const f in FLOORS) FLOORS[f].markers = JSON.parse(JSON.stringify(DEFAULTS[f].markers));
+  document.querySelectorAll('.hot').forEach(b=>{
+    const F = FLOORS[b.dataset.floor], p = F.markers[b.dataset.n];
+    b.style.left = (p[0]/F.iw*100).toFixed(3)+'%';
+    b.style.top  = (p[1]/F.ih*100).toFixed(3)+'%';
+  });
+  showToast('已还原默认位置');
+};
+
+// 拖动标点（Pointer Events，鼠标/触屏通用）
+document.addEventListener('pointerdown', e=>{
+  if(!editMode) return;
+  const hot = e.target.closest('.hot');
+  if(!hot) return;
+  e.preventDefault();
+  const f = hot.dataset.floor, n = hot.dataset.n, F = FLOORS[f];
+  const img = hot.parentElement.querySelector('img');
+  const rc = img.getBoundingClientRect();
+  const move = ev=>{
+    let px = (ev.clientX - rc.left) / rc.width,  py = (ev.clientY - rc.top) / rc.height;
+    px = Math.min(Math.max(px, 0), 1); py = Math.min(Math.max(py, 0), 1);
+    const x = Math.round(px * F.iw), y = Math.round(py * F.ih);
+    F.markers[n] = [x, y];
+    hot.style.left = (px*100).toFixed(3)+'%';
+    hot.style.top  = (py*100).toFixed(3)+'%';
+  };
+  const up = ()=>{
+    window.removeEventListener('pointermove', move);
+    window.removeEventListener('pointerup', up);
+    window.removeEventListener('pointercancel', up);
+    savePositions();
+    autoReport();
+    showToast('标点 ' + n + ' 位置已保存');
+  };
+  window.addEventListener('pointermove', move);
+  window.addEventListener('pointerup', up);
+  window.addEventListener('pointercancel', up);
+});
+
 function openMarker(f, n){
+  if(editMode) return;
   const F = FLOORS[f], d = F.data[n];
   if(!d){ showToast('标点 ' + n + '：内容待配置'); return; }
   mTitle.innerHTML = '<span class="fl">' + F.name + '</span><span class="no">' + n + '</span>' + d.title;
@@ -213,7 +410,8 @@ viewer.addEventListener('click', ()=>{ viewer.classList.remove('show'); viewerIm
 document.addEventListener('keydown', e=>{
   if(e.key === 'Escape'){
     if(viewer.classList.contains('show')){ viewer.classList.remove('show'); viewerImg.src=''; }
-    else closePlayer();
+    else if(mask.classList.contains('show')) closePlayer();
+    else if(editMode) setEdit(false);
   }
   if(e.key === '1' || e.key === '2'){ if(!mask.classList.contains('show')) switchFloor(e.key); }
 });
